@@ -189,27 +189,27 @@ jobs:
 
           RELEASE_TAG="debug-apk-build-${GITHUB_RUN_NUMBER}-${GITHUB_RUN_ATTEMPT}"
           RELEASE_TITLE="Debug APK Build #${GITHUB_RUN_NUMBER}"
+          NOTES_FILE="${RUNNER_TEMP}/release_notes.txt"
 
-          RELEASE_NOTES=$(cat << 'EOF'
-### Automated Debug Build
-- This is an automatically generated debug APK.
-- The APK was built by GitHub Actions.
-- GitHub Actions run number: ${{ github.run_number }}
-- GitHub Actions run attempt: ${{ github.run_attempt }}
-- Source commit SHA: ${{ github.sha }}
-
-### Important Notes
-- The APK is intended for testing.
-- The APK is not a Play Store production release.
-- The APK is signed only with a temporary debug keystore.
-EOF
-)
+          {
+            echo "### Automated Debug Build"
+            echo "- This is an automatically generated debug APK."
+            echo "- The APK was built by GitHub Actions."
+            echo "- GitHub Actions run number: ${{ github.run_number }}"
+            echo "- GitHub Actions run attempt: ${{ github.run_attempt }}"
+            echo "- Source commit SHA: ${{ github.sha }}"
+            echo ""
+            echo "### Important Notes"
+            echo "- The APK is intended for testing."
+            echo "- The APK is not a Play Store production release."
+            echo "- The APK is signed only with a temporary debug keystore."
+          } > "$NOTES_FILE"
 
           echo "Publishing release with tag: $RELEASE_TAG"
           gh release create "$RELEASE_TAG" "$RELEASE_ASSET" \
             --title "$RELEASE_TITLE" \
             --target "$GITHUB_SHA" \
-            --notes "$RELEASE_NOTES" \
+            --notes-file "$NOTES_FILE" \
             --latest
 
           echo "Release created successfully."
@@ -235,32 +235,32 @@ EOF
             echo "Direct GitHub Release Page URL: $RELEASE_URL"
             echo "Exact APK Asset Filename: $ASSET_NAME"
 
-            cat >> "$GITHUB_STEP_SUMMARY" << EOF
-## :rocket: APK Release Published Successfully!
-
-- **Release Title:** ${RELEASE_TITLE}
-- **Release Tag:** \`${RELEASE_TAG}\`
-- **APK Asset Filename:** \`${ASSET_NAME}\`
-- **Direct GitHub Release Page:** [${RELEASE_URL}](${RELEASE_URL})
-
-### Download Instructions
-- The APK can be downloaded directly from the **Assets** section of the [GitHub Release](${RELEASE_URL}).
-- The normal Actions artifact named \`app-debug-apk\` is also stored and available as a backup under the workflow summary.
-EOF
+            {
+              echo "## :rocket: APK Release Published Successfully!"
+              echo ""
+              echo "- **Release Title:** ${RELEASE_TITLE}"
+              echo "- **Release Tag:** \`${RELEASE_TAG}\`"
+              echo "- **APK Asset Filename:** \`${ASSET_NAME}\`"
+              echo "- **Direct GitHub Release Page:** [${RELEASE_URL}](${RELEASE_URL})"
+              echo ""
+              echo "### Download Instructions"
+              echo "- The APK can be downloaded directly from the **Assets** section of the [GitHub Release](${RELEASE_URL})."
+              echo "- The normal Actions artifact named \`app-debug-apk\` is also stored and available as a backup under the workflow summary."
+            } >> "$GITHUB_STEP_SUMMARY"
 
           else
             echo "::warning::GitHub Release publishing failed or was not completed."
             echo "APK build succeeded."
             echo "The Actions artifact named app-debug-apk remains available."
 
-            cat >> "$GITHUB_STEP_SUMMARY" << EOF
-## :warning: GitHub Release Publishing Notice
-
-GitHub Release creation did not complete successfully.
-
-- **APK Build Status:** Succeeded
-- **Actions Artifact:** The APK build succeeded and the artifact named \`app-debug-apk\` was preserved and remains available for download under the workflow Artifacts section.
-EOF
+            {
+              echo "## :warning: GitHub Release Publishing Notice"
+              echo ""
+              echo "GitHub Release creation did not complete successfully."
+              echo ""
+              echo "- **APK Build Status:** Succeeded"
+              echo "- **Actions Artifact:** The APK build succeeded and the artifact named \`app-debug-apk\` was preserved and remains available for download under the workflow Artifacts section."
+            } >> "$GITHUB_STEP_SUMMARY"
           fi
 
 
