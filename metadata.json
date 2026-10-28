@@ -1,0 +1,6 @@
+{
+  "name": "Crystal Keyboard",
+  "description": "Premium transparent glass smart keyboard with SwiftKey-level productivity, custom opacity, and intelligent typing.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
